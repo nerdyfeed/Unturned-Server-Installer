@@ -1,5 +1,6 @@
 # /bin/sh
 
+read -p "Введите имя сервера: " serverName
 echo Начинаю установку Unturned Server...
 echo Обновление окружения...
 sleep 3
@@ -44,4 +45,6 @@ sleep 3
 cd ~
 cp steamcmd/linux32/steamclient.so /lib
 cp steamcmd/linux64/steamclient.so /lib64
+mkdir ~/Servers/$serverName
+echo "sh ~/Scripts/start.sh $serverName" > start.sh
 echo Установка завершена! Для запуска сервера введите start.sh
