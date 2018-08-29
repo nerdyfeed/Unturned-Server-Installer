@@ -10,11 +10,12 @@ STARTING="${green}Начинаю установку Unturned Server...${reset}"
 # ACTION
 clear
 read -p "Введите имя сервера: " serverName
+read -p "Введите количество слотов: " serverSlots
+read -p "Введите карту сервера: " serverMap
 echo $STARTING
 echo "Обновление окружения..."
 sleep 3
-sudo apt-get -y update
-sudo apt-get -y upgrade
+sudo apt-get -y update && sudo apt-get -y upgrade && echo $SUCCESS
 echo Установка необходимого ПО...
 sleep 3
 sudo apt-get -y install screen htop mc unzip
@@ -61,8 +62,8 @@ echo "${green}
 ----------------------
 Установка завершена!
 Название: $serverName
-Слотов: $maxplayers
-Карта: $map
+Слотов: $serverSlots
+Карта: $serverMap
 ----------------------
 Для запуска сервера введите start.sh
 ${reset}"
