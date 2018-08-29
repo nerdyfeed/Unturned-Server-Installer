@@ -28,7 +28,7 @@ wget https://ci.rocketmod.net/job/Rocket.Unturned%20Linux/lastSuccessfulBuild/ar
 echo Установка прав...
 cd $serverDirectory/Scripts && chmod 755 update.sh && chmod 755 start.sh && echo $SUCCESS
 echo Установка сервера...
-sh update.sh +login anonymous && echo $SUCCESS
+sh update.sh +login "srvuntrnd" "serveruntnrned" +set_steam_guard_code "HV7PJ" && echo $SUCCESS
 echo Установка SteamCMD...
 cd $serverDirectory
 mkdir steamcmd
@@ -36,7 +36,7 @@ cd steamcmd
 wget http://media.steampowered.com/installer/steamcmd_linux.tar.gz
 tar -xvzf steamcmd_linux.tar.gz
 chmod +x steamcmd.sh
-./steamcmd.sh +@sSteamCmdForcePlatformBitness 32 +login anonymous
+./steamcmd.sh +@sSteamCmdForcePlatformBitness 32 +login "srvuntrnd" "serveruntnrned" +set_steam_guard_code "HV7PJ" && echo $SUCCESS
 echo Подключение SteamCMD...
 cd $serverDirectory
 cp steamcmd/linux32/steamclient.so /lib
