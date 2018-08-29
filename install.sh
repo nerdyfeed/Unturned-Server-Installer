@@ -1,8 +1,17 @@
 # /bin/sh
 
+#COLORS
+green=$(tput setaf 2)
+red=$(tput setaf 1)
+reset=$(tput sgr0)
+# VARS
+SUCCESS="${green}[Успешно]${reset}"
+STARTING="${green}Начинаю установку Unturned Server...${reset}"
+# ACTION
+clear
 read -p "Введите имя сервера: " serverName
-echo Начинаю установку Unturned Server...
-echo Обновление окружения...
+echo $STARTING
+echo "Обновление окружения..."
 sleep 3
 sudo apt-get -y update
 sudo apt-get -y upgrade
@@ -46,5 +55,14 @@ cd ~
 cp steamcmd/linux32/steamclient.so /lib
 cp steamcmd/linux64/steamclient.so /lib64
 mkdir ~/Servers/$serverName
-echo "sh ~/Scripts/start.sh $serverName" > start.sh
-echo Установка завершена! Для запуска сервера введите start.sh
+echo "sh ~/Scripts/start.sh $serverName" > $serverName.sh
+chmod 777 $serverName.sh
+echo "${green}
+----------------------
+Установка завершена!
+Название: $serverName
+Слотов: $maxplayers
+Карта: $map
+----------------------
+Для запуска сервера введите start.sh
+${reset}"
