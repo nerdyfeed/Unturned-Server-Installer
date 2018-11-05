@@ -45,6 +45,7 @@ fi
 }
 
 function FirstSetup() {
+mkdir /etc/untsrv/
 #COLORS
 green=$(tput setaf 2)
 red=$(tput setaf 1)
