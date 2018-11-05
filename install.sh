@@ -1,18 +1,73 @@
-# /bin/sh
+function MenuResume() {
+	clear
+	echo "Добро пожаловать в установщик сервера Unturned"
+	echo "Репозиторий скрипта доступен здесь: https://github.com/nerdyfeed/Unturned-Server-Installer"
+	echo ""
+	echo "Похоже, у вас уже есть установленные сервера"
+	echo ""
+	echo "Что хотите сделать?"
+	echo "   1) Добавить сервер"
+	echo "   2) Обновить сервер"
+	echo "   3) Добавить аккаунт"
+	echo "   4) Выход"
 
+until [[ "$MENU_OPTION" =~ ^[1-4]$ ]]; do
+	read -rp "Выбор [1-4]: " MENU_OPTION
+done
+
+case $MENU_OPTION in
+	1)
+		FirstSetup
+	;;
+	2)
+		UpdateServer
+	;;
+	3)
+		addUser
+	;;
+	4)
+		exit 0
+	;;
+esac
+
+}
+
+function addUser() {
+if [ ! -f /etc/untsrv/.steam-acc ]; then
+	echo "Пожалуйста, введите данные от Steam аккаунта для установки сервера"
+	read -p "Логин: " steamLogin
+	read -p "Пароль: " steamPass
+	echo -e "$steamLogin" > /etc/untsrv/.steam-acc
+	echo -e "$steamPass" > /etc/untsrv/.steam-pass
+else
+	echo "Данные уже введены"
+fi
+}
+
+function FirstSetup() {
 #COLORS
 green=$(tput setaf 2)
 red=$(tput setaf 1)
 reset=$(tput sgr0)
+# GET ACC
+if [ ! -f /etc/untsrv/.steam-acc ]; then
+	echo "$red[Ошибка] Отсутствуют данные аккаунта Steam $reset"
+	echo ""
+	addUser
+fi
+LOGIN=$(< /etc/untsrv/.steam-acc)
+PASS=$(< /etc/untsrv/.steam-pass)
 # VARS
 SUCCESS="${green}[Успешно]${reset}"
-STARTING="${green}Начинаю установку Unturned Server...${reset}"
+STARTING="${green}Начинаю установку сервера Unturned...${reset}"
 # ACTION
 clear
 read -p "Введите имя сервера: " serverName
-read -p "Введите количество слотов: " serverSlots
-read -p "Введите карту сервера: " serverMap
-read -p "Введите директорию сервера: " serverDirectory
+read -p "Введите количество слотов [24] : " serverSlots
+read -p "Введите карту сервера [PEI]: " serverMap
+read -p "Введите директорию сервера [/root]: " serverDirectory
+echo -e "#LAST INSTALL CONF\nname $serverName\nslots $serverSlots\nmap $serverMap\ndir $serverDirectory" > /etc/untsrv/server.conf
+#START
 echo $STARTING
 echo "Обновление окружения..."
 sudo apt-get -y update && sudo apt-get -y upgrade && echo $SUCCESS
@@ -28,7 +83,7 @@ wget https://ci.rocketmod.net/job/Rocket.Unturned%20Linux/lastSuccessfulBuild/ar
 echo Установка прав...
 cd $serverDirectory/Scripts && chmod 755 update.sh && chmod 755 start.sh && echo $SUCCESS
 echo Установка сервера...
-sh update.sh +login "srvuntrnd" "serveruntnrned" +set_steam_guard_code "HV7PJ" && echo $SUCCESS
+./update.sh "$LOGIN" "$PASS" && echo $SUCCESS
 echo Установка SteamCMD...
 cd $serverDirectory
 mkdir steamcmd
@@ -36,7 +91,7 @@ cd steamcmd
 wget http://media.steampowered.com/installer/steamcmd_linux.tar.gz
 tar -xvzf steamcmd_linux.tar.gz
 chmod +x steamcmd.sh
-./steamcmd.sh +@sSteamCmdForcePlatformBitness 32 +login "srvuntrnd" "serveruntnrned" +set_steam_guard_code "HV7PJ" && echo $SUCCESS
+./steamcmd.sh +@sSteamCmdForcePlatformBitness 32 +login "$LOGIN" "$PASS" && echo $SUCCESS
 echo Подключение SteamCMD...
 cd $serverDirectory
 cp steamcmd/linux32/steamclient.so /lib
@@ -52,5 +107,20 @@ echo "${green}
 Карта: $serverMap
 Директория: $serverDirectory
 ----------------------
-Для запуска сервера введите start.sh
+Для запуска сервера введите ./$serverName.sh
 ${reset}"
+# END
+}
+
+function UpdateServer() {
+	LOGIN=$(< /etc/untsrv/.steam-acc)
+    PASS=$(< /etc/untsrv/.steam-pass)
+	sh Scripts/update.sh "$LOGIN" "$PASS"
+}
+
+if [ -f /etc/untsrv/server.conf ]; then
+        MenuResume
+else
+        FirstSetup
+fi
+
