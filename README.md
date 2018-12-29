@@ -12,5 +12,5 @@ TUTORIAL:
 
 3. Enter start command
 
-4. PROFIT!1!
+4. <b>PROFIT!1!</b>
 </p>
