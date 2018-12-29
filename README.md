@@ -1,5 +1,4 @@
-![alt text](http://uncls.gamestores.ru/files/stores/frontend/template_4/images/unturned_logo.png)
-# Unturned-Server-Installer
+![Logo](http://uncls.gamestores.ru/files/stores/frontend/template_4/images/unturned_logo.png) # Unturned-Server-Installer
 Easy Install Unturned server
 
 TUTORIAL:
