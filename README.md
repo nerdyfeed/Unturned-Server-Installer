@@ -1,4 +1,4 @@
-<p align="left">
+<p>
   <img src="http://uncls.gamestores.ru/files/stores/frontend/template_4/images/unturned_logo.png" width="100" title="hover text">
 </p>
 <h2>Unturned-Server-Installer</h2>
