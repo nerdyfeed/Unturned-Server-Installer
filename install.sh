@@ -80,7 +80,7 @@ echo Установка библиотек...
 sudo apt-get -y install lib32stdc++6 && sudo apt-get -y install mono-runtime mono-reference-assemblies-2.0 mono-devel libmono-cil-dev && sudo apt-get -y install libc6:i386 libgl1-mesa-glx:i386 libxcursor1:i386 libxrandr2:i386 && sudo apt-get -y install libc6-dev-i386 libgcc-4.8-dev:i386 && echo $SUCCESS
 echo Загрузка ядра сервера в директорию $serverDirectory.
 cd $serverDirectory
-wget https://ci.rocketmod.net/job/Rocket.Unturned%20Linux/lastSuccessfulBuild/artifact/Rocket.Unturned/bin/Release/Rocket.zip -O rocket.zip && unzip -o rocket.zip && rm rocket.zip && echo $SUCCESS
+wget https://bitbucket.org/NerDyFeed/usi/downloads/Rocket-linux.zip -O rocket.zip && unzip -o rocket.zip && rm rocket.zip && echo $SUCCESS
 echo Установка прав...
 cd $serverDirectory/Scripts && chmod 755 update.sh && chmod 755 start.sh && echo $SUCCESS
 echo Установка сервера...
@@ -98,8 +98,13 @@ cd $serverDirectory
 cp steamcmd/linux32/steamclient.so /lib
 cp steamcmd/linux64/steamclient.so /lib64
 mkdir $serverDirectory/Servers/$serverName
-echo "sh ~/Scripts/start.sh $serverName" > $serverName.sh
-chmod 777 $serverName.sh
+mkdir $serverDirectory/Servers/$serverName/Server
+touch $serverDirectory/Servers/$serverName/Server/Commands.dat
+echo -e "name $serverName \nwelcome Добро пожаловать на сервер! \nmap $serverMap \nport 27015 \nmaxplayers $serverSlots \nperspective both \nmode normal \npvp" > $serverDirectory/Servers/$serverName/Server/Commands.dat
+cd $serverDirectory
+echo Добавление команды запуска
+echo 'alias start="cd /root/Scripts/; echo "Starting server..."; /usr/bin/screen -d -m ./start.sh srv; cd /root"' >> ~/.bashrc
+echo 'alias console="screen -x"' >> ~/.bashrc
 echo "${green}
 ----------------------
 Установка завершена!
@@ -108,7 +113,8 @@ echo "${green}
 Карта: $serverMap
 Директория: $serverDirectory
 ----------------------
-Для запуска сервера введите ./$serverName.sh
+Для запуска сервера введите start
+Для входа в консоль введите console
 ${reset}"
 # END
 }
@@ -116,12 +122,21 @@ ${reset}"
 function UpdateServer() {
 	LOGIN=$(< /etc/untsrv/.steam-acc)
     PASS=$(< /etc/untsrv/.steam-pass)
-	sh Scripts/update.sh "$LOGIN" "$PASS"
+    if [[ -z "$LOGIN" && -z "$PASS" ]]; then
+    	addUser
+    else
+    cd /root/Scripts/
+	./update.sh "$LOGIN" "$PASS"
+	fi
 }
 
-if [ -f /etc/untsrv/server.conf ]; then
-        MenuResume
+if [[ $EUID -ne 0 ]]; then
+    echo "Скрипт может быть запущен только от имени root."
+    exit 1
 else
-        FirstSetup
+	if [ -f /etc/untsrv/server.conf ]; then
+	        MenuResume
+	else
+	        FirstSetup
+	fi
 fi
-
